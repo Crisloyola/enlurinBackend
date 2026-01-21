@@ -13,10 +13,11 @@ import com.city.profile.ProfileService;
 import com.city.profile.dto.ProfileCreateRequest;
 import com.city.profile.dto.ProfileUpdateRequest;
 
-
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 
+@Tag(name = "Perfiles Privados", description = "Gestión de perfiles (USER / ADMIN)")
 @RestController
 @RequestMapping("/profiles")
 @RequiredArgsConstructor

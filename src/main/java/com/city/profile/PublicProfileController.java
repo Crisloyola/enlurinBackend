@@ -1,9 +1,12 @@
 package com.city.profile;
 
-import java.util.List;
-
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+import java.util.List;
+
+@Tag(name = "Negocios Públicos", description = "Endpoints públicos SEO")
 @RestController
 @RequestMapping("/negocio")
 public class PublicProfileController {
@@ -14,7 +17,8 @@ public class PublicProfileController {
         this.service = service;
     }
 
-    // 🔥 LISTADO
+    // 🔥 LISTADO SEO
+    // /negocio/restaurantes/lima
     @GetMapping("/{category}/{district}")
     public List<Profile> list(
             @PathVariable String category,
@@ -23,7 +27,8 @@ public class PublicProfileController {
         return service.listProfiles(category, district);
     }
 
-    // 🔥 DETALLE
+    // 🔥 DETALLE SEO
+    // /negocio/restaurantes/lima/pizzeria-don-pepe
     @GetMapping("/{category}/{district}/{slug}")
     public Profile detail(
             @PathVariable String category,

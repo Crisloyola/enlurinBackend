@@ -21,7 +21,6 @@ public class AuthService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-
     public AuthService(
         AuthenticationManager authenticationManager,
         JwtService jwtService,
@@ -35,34 +34,35 @@ public class AuthService {
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
+
     public void register(RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("El email ya está registrado");
         }
 
-        Role userRole = roleRepository.findByName("USER")
-                .orElseThrow(() -> new RuntimeException("Rol USER no encontrado"));
+        Role userRole = roleRepository.findByName("ROLE_USER")
+            .orElseThrow(() -> new RuntimeException("Rol ROLE_USER no encontrado"));
 
         User user = new User(
-        request.getName(),
-        request.getEmail(),
-        passwordEncoder.encode(request.getPassword()),
-        userRole
+            request.getName(),
+            request.getEmail(),
+            passwordEncoder.encode(request.getPassword()),
+            userRole
         );
 
         userRepository.save(user);
     }
 
     public String login(LoginRequest request) {
+
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 request.getEmail(),
                 request.getPassword()
             )
         );
+
         return jwtService.generateToken(request.getEmail());
     }
-
-
 }

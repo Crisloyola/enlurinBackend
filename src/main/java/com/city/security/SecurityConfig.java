@@ -1,51 +1,55 @@
 package com.city.security;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.stereotype.Component;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import lombok.RequiredArgsConstructor;
-
-
-@Component
-@RequiredArgsConstructor
+@Configuration
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final JwtAuthenticationFilter jwtFilter;
+
     @Bean
-    AuthenticationManager authenticationManager(
-            AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration configuration
+    ) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-            // API REST → no CSRF
             .csrf(csrf -> csrf.disable())
-
-            // reglas de acceso
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/negocio/**").permitAll()
+                .requestMatchers(
+                    "/auth/**",
+                    "/negocio/**",
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**"
+                ).permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(
-                new JwtAuthenticationFilter(
-                    new JwtService(),
-                    new CustomUserDetailsService(null)
-                ),
-                org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class
+                jwtFilter,
+                UsernamePasswordAuthenticationFilter.class
             )
-            // sin login por formulario
             .formLogin(form -> form.disable())
-
-            // sin basic auth
             .httpBasic(basic -> basic.disable());
 
         return http.build();
