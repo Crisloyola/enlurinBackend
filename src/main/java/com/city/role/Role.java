@@ -1,5 +1,6 @@
 package com.city.role;
 
+
 import jakarta.persistence.*;
 
 @Entity
@@ -11,7 +12,8 @@ public class Role {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String name; // USER, ADMIN
+    private String name; // ROLE_USER, ROLE_ADMIN
+
 
       // 🔹 Constructor vacío (OBLIGATORIO para JPA)
     public Role() {

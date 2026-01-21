@@ -1,18 +1,16 @@
-package com.city.auth;
+package com.city.profile;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
-import com.city.profile.Profile;
-import com.city.profile.PublicProfileService;
-
+@RestController
+@RequestMapping("/negocio")
 public class PublicProfileController {
 
     private final PublicProfileService service;
 
-     public PublicProfileController(PublicProfileService service) {
+    public PublicProfileController(PublicProfileService service) {
         this.service = service;
     }
 

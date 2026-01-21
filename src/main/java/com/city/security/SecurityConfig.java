@@ -1,13 +1,19 @@
 package com.city.security;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.stereotype.Component;
 
-@Configuration
+import lombok.RequiredArgsConstructor;
+
+
+@Component
+@RequiredArgsConstructor
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Bean
@@ -29,7 +35,13 @@ public class SecurityConfig {
                 .requestMatchers("/negocio/**").permitAll()
                 .anyRequest().authenticated()
             )
-
+            .addFilterBefore(
+                new JwtAuthenticationFilter(
+                    new JwtService(),
+                    new CustomUserDetailsService(null)
+                ),
+                org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class
+            )
             // sin login por formulario
             .formLogin(form -> form.disable())
 

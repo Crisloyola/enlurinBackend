@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.city.files.FileStorageService;
 import com.city.profile.Profile;
 import com.city.profile.ProfileRepository;
+import com.city.profile.ProfileService;
 import com.city.user.User;
 
 import java.util.List;
@@ -18,10 +19,11 @@ public class ProfileController {
     private final ProfileRepository profileRepository;
     private final FileStorageService fileStorageService;
 
-    public ProfileController(ProfileRepository profileRepository, FileStorageService fileStorageService) {
+    public ProfileController(ProfileRepository profileRepository, FileStorageService fileStorageService, ProfileService profileService) {
         this.profileRepository = profileRepository;
         this.fileStorageService = fileStorageService;
     }
+
 
     @GetMapping
     public List<Profile> search(

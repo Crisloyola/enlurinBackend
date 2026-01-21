@@ -1,5 +1,8 @@
 package com.city.user;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.city.role.Role;
 import jakarta.persistence.*;
 
@@ -24,9 +27,19 @@ public class User {
     @JoinColumn(name = "role_id")
     private Role role;
 
+        @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "user_roles",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
     // 🔹 Constructor vacío (OBLIGATORIO para JPA)
     public User() {}
 
+    public Set<Role> getRoles() {
+        return roles;
+    }
     // 🔹 Constructor que usará el registro
     public User(String name, String email, String password, Role role) {
         this.name = name;
