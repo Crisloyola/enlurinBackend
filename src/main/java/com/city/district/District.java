@@ -13,6 +13,9 @@ public class District {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @Column(nullable = false, unique = true)
+        private String slug;
+
 
     public District() {}
 

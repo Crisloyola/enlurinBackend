@@ -26,6 +26,7 @@ public class SecurityConfig {
             // reglas de acceso
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/negocio/**").permitAll()
                 .anyRequest().authenticated()
             )
 
