@@ -1,66 +1,70 @@
 package com.city.auth;
-import org.springframework.http.ResponseEntity;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.city.files.FileStorageService;
 import com.city.profile.Profile;
-import com.city.profile.ProfileRepository;
-import com.city.profile.ProfileService;
-import com.city.user.User;
 
-import java.util.List;
+import com.city.profile.ProfileService;
+import com.city.profile.dto.ProfileCreateRequest;
+import com.city.profile.dto.ProfileUpdateRequest;
+
+
+import lombok.RequiredArgsConstructor;
+
 
 @RestController
 @RequestMapping("/profiles")
+@RequiredArgsConstructor
 public class ProfileController {
 
-    private final ProfileRepository profileRepository;
+    private final ProfileService profileService;
     private final FileStorageService fileStorageService;
 
-    public ProfileController(ProfileRepository profileRepository, FileStorageService fileStorageService, ProfileService profileService) {
-        this.profileRepository = profileRepository;
-        this.fileStorageService = fileStorageService;
-    }
-
-
-    @GetMapping
-    public List<Profile> search(
-            @RequestParam String category,
-            @RequestParam String district
+    // 🔐 SOLO USUARIO LOGUEADO
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping
+    public Profile createProfile(
+            @AuthenticationPrincipal UserDetails user,
+            @RequestBody ProfileCreateRequest request
     ) {
-        return profileRepository
-                .findByCategory_NameAndDistrict_Name(category, district);
+        return profileService.createProfile(
+                user.getUsername(), // email
+                request
+        );
     }
 
-    @PostMapping("/profile/logo")
-    public Profile uploadLogo(
-            @RequestParam("file") MultipartFile file,
-            @AuthenticationPrincipal User user
+    // 🔐 SOLO EL DUEÑO
+    @PreAuthorize("hasRole('USER')")
+    @PutMapping
+    public Profile updateMyProfile(
+            @AuthenticationPrincipal UserDetails user,
+            @RequestBody ProfileUpdateRequest request
     ) {
-        Profile profile = profileRepository
-                .findByUser_Id(user.getId())
-                .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
-
-        String logoUrl = fileStorageService.saveProfileLogo(profile.getId(), file);
-        profile.setLogoUrl(logoUrl);
-
-        return profileRepository.save(profile);
+        return profileService.updateProfile(user.getUsername(), request);
     }
-    @PostMapping("/{id}/logo")
-    public ResponseEntity<?> uploadLogo(
+
+    // 🔥 SOLO ADMIN
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{id}")
+    public Profile adminUpdateProfile(
             @PathVariable Long id,
-            @RequestParam("file") MultipartFile file
+            @RequestBody ProfileUpdateRequest request
     ) {
-        Profile profile = profileRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
+        return profileService.adminUpdateProfile(id, request);
+    }
 
-        String logoUrl = fileStorageService.saveProfileLogo(profile.getId(), file);
-        profile.setLogoUrl(logoUrl);
-
-        profileRepository.save(profile);
-
-        return ResponseEntity.ok(profile);
+    // 🔐 USER y ADMIN
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @PostMapping("/{id}/logo")
+    public Profile uploadLogo(
+            @PathVariable Long id,
+            @RequestParam MultipartFile file
+    ) {
+        return profileService.uploadLogo(id, file);
     }
 }

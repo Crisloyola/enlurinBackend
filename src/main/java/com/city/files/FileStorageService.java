@@ -1,37 +1,27 @@
 package com.city.files;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.nio.file.*;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class FileStorageService {
 
-    @Value("${file.upload-dir}")
-    private String uploadDir;
+    private static final String UPLOAD_DIR = "uploads/";
 
     public String saveProfileLogo(Long profileId, MultipartFile file) {
-
         try {
-            String filename = "logo." + getExtension(file.getOriginalFilename());
+            Files.createDirectories(Paths.get(UPLOAD_DIR));
 
-            Path profileDir = Paths.get(uploadDir, "profiles", profileId.toString());
-            Files.createDirectories(profileDir);
+            String filename = "profile_" + profileId + "_" + file.getOriginalFilename();
+            Path path = Paths.get(UPLOAD_DIR + filename);
 
-            Path filePath = profileDir.resolve(filename);
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            Files.write(path, file.getBytes());
 
-            return "/uploads/profiles/" + profileId + "/" + filename;
-
+            return "/uploads/" + filename;
         } catch (IOException e) {
-            throw new RuntimeException("Error al subir imagen");
+            throw new RuntimeException("Error al guardar archivo", e);
         }
-    }
-
-    private String getExtension(String name) {
-        return name.substring(name.lastIndexOf(".") + 1);
     }
 }
