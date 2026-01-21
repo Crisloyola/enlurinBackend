@@ -1,11 +1,10 @@
-package com.city.district;
+package com.city.category;
 
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "districts")
-public class District {
-
+@Table(name = "categories")
+public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -13,13 +12,13 @@ public class District {
     @Column(nullable = false, unique = true)
     private String name;
 
+    public Category() {}
 
-    public District() {}
-
-    public District(String name) {
+    public Category(String name) {
         this.name = name;
     }
 
     public Long getId() { return id; }
     public String getName() { return name; }
+
 }
