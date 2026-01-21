@@ -17,31 +17,25 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 
-@Tag(name = "Perfiles Privados", description = "Gestión de perfiles (USER / ADMIN)")
 @RestController
 @RequestMapping("/profiles")
 @RequiredArgsConstructor
+@Tag(name = "Perfiles Privados")
 public class ProfileController {
 
     private final ProfileService profileService;
-    private final FileStorageService fileStorageService;
 
-    // 🔐 SOLO USUARIO LOGUEADO
     @PreAuthorize("hasRole('USER')")
     @PostMapping
     public Profile createProfile(
             @AuthenticationPrincipal UserDetails user,
             @RequestBody ProfileCreateRequest request
     ) {
-        return profileService.createProfile(
-                user.getUsername(), // email
-                request
-        );
+        return profileService.createProfile(user.getUsername(), request);
     }
 
-    // 🔐 SOLO EL DUEÑO
     @PreAuthorize("hasRole('USER')")
-    @PutMapping
+    @PutMapping("/me")
     public Profile updateMyProfile(
             @AuthenticationPrincipal UserDetails user,
             @RequestBody ProfileUpdateRequest request
@@ -49,7 +43,6 @@ public class ProfileController {
         return profileService.updateProfile(user.getUsername(), request);
     }
 
-    // 🔥 SOLO ADMIN
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public Profile adminUpdateProfile(
@@ -59,13 +52,9 @@ public class ProfileController {
         return profileService.adminUpdateProfile(id, request);
     }
 
-    // 🔐 USER y ADMIN
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    @PostMapping("/{id}/logo")
-    public Profile uploadLogo(
-            @PathVariable Long id,
-            @RequestParam MultipartFile file
-    ) {
-        return profileService.uploadLogo(id, file);
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}")
+    public void deleteProfile(@PathVariable Long id) {
+        profileService.deleteProfile(id);
     }
 }

@@ -1,9 +1,6 @@
 package com.city.profile;
 
-import com.city.category.Category;
-import com.city.category.CategoryRepository;
-import com.city.district.District;
-import com.city.district.DistrictRepository;
+import org.springframework.lang.NonNull;
 import com.city.files.FileStorageService;
 import com.city.user.User;
 import com.city.user.UserRepository;
@@ -51,7 +48,7 @@ public class ProfileService {
         return profileRepository.save(profile);
     }
 
-    public Profile adminUpdateProfile(Long id, ProfileUpdateRequest req) {
+    public Profile adminUpdateProfile(@NonNull Long id, ProfileUpdateRequest req) {
 
         Profile profile = profileRepository.findById(id)
                 .orElseThrow();
@@ -60,7 +57,7 @@ public class ProfileService {
         return profileRepository.save(profile);
     }
 
-    public Profile uploadLogo(Long id, MultipartFile file) {
+    public Profile uploadLogo(@NonNull Long id, MultipartFile file) {
 
         Profile profile = profileRepository.findById(id)
                 .orElseThrow();
@@ -69,5 +66,14 @@ public class ProfileService {
         profile.setLogoUrl(url);
 
         return profileRepository.save(profile);
+    }
+
+    public Profile deleteProfile(@NonNull Long id) {
+
+        Profile profile = profileRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
+
+        profileRepository.delete(profile);
+        return profile;
     }
 }

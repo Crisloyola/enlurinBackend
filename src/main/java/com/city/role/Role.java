@@ -1,11 +1,13 @@
 package com.city.role;
 
 
+import org.springframework.security.core.GrantedAuthority;
+
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "roles")
-public class Role {
+public class Role implements GrantedAuthority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,6 +16,10 @@ public class Role {
     @Column(nullable = false, unique = true)
     private String name; // ROLE_USER, ROLE_ADMIN
 
+    @Override
+    public String getAuthority() {
+        return name;
+    }
 
       // 🔹 Constructor vacío (OBLIGATORIO para JPA)
     public Role() {

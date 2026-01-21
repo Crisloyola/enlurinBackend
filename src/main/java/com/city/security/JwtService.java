@@ -3,9 +3,14 @@ package com.city.security;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import com.city.user.User;
+
 import java.util.Date;
+import java.util.List;
 
 import javax.crypto.SecretKey;
 
@@ -19,16 +24,17 @@ public class JwtService {
         return Keys.hmacShaKeyFor(SECRET.getBytes());
     }
 
-    public String generateToken(String email) {
+    public String generateToken(User user) {
         return Jwts.builder()
-                .subject(email)
+                .subject(user.getEmail())
+                .claim("roles", List.of("ROLE_" + user.getRole().getName()))
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 86400000))
                 .signWith(getKey())
                 .compact();
     }
 
-        public String extractEmail(String token) {
+    public String extractEmail(String token) {
         return Jwts.parser()
                 .verifyWith(getKey())
                 .build()
