@@ -3,14 +3,12 @@ package com.city.security;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.city.user.User;
 
 import java.util.Date;
-import java.util.List;
 
 import javax.crypto.SecretKey;
 

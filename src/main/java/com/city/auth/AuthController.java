@@ -4,8 +4,13 @@ import com.city.auth.dto.AuthResponse;
 import com.city.auth.dto.LoginRequest;
 import com.city.auth.dto.RegisterRequest;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -34,10 +39,13 @@ public class AuthController {
         return "Todos pueden ver esto";
     }
 
-    @PreAuthorize("hasRole('USER')")
     @GetMapping("/user")
-    public String userEndpoint() {
-        return "Solo USER autenticado";
+    @PreAuthorize("hasRole('USER')")
+    public Map<String, Object> user(@AuthenticationPrincipal UserDetails user) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("email", user.getUsername());
+        response.put("roles", user.getAuthorities());
+        return response;
     }
 
     @PreAuthorize("hasRole('ADMIN')")
