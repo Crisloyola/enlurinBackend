@@ -1,6 +1,8 @@
 package com.city.security;
 
 import com.city.user.User;
+
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +21,8 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(
-                new SimpleGrantedAuthority(user.getRole().getName())
+                // 🔥 PREFIJO OBLIGATORIO
+                new SimpleGrantedAuthority("ROLE_" + user.getRole().getName())
         );
     }
 

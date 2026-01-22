@@ -1,23 +1,35 @@
 package com.city.profile;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import com.city.files.FileStorageService;
 import com.city.user.User;
 import com.city.user.UserRepository;
 import com.city.utils.SlugUtil;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+
 import com.city.profile.dto.ProfileCreateRequest;
 import com.city.profile.dto.ProfileUpdateRequest;
 
 @Service
-@RequiredArgsConstructor
 public class ProfileService {
 
     private final ProfileRepository profileRepository;
     private final UserRepository userRepository;
     private final FileStorageService fileStorageService;
+
+    public ProfileService(
+            ProfileRepository profileRepository,
+            UserRepository userRepository,
+            FileStorageService fileStorageService
+    ) {
+        this.profileRepository = profileRepository;
+        this.userRepository = userRepository;
+        this.fileStorageService = fileStorageService;
+    }
+
 
     public Profile createProfile(String email, ProfileCreateRequest req) {
 
@@ -51,16 +63,20 @@ public class ProfileService {
     public Profile adminUpdateProfile(@NonNull Long id, ProfileUpdateRequest req) {
 
         Profile profile = profileRepository.findById(id)
-                .orElseThrow();
+                .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
 
         profile.setDescription(req.getDescription());
         return profileRepository.save(profile);
     }
 
-    public Profile uploadLogo(@NonNull Long id, MultipartFile file) {
+    public Profile uploadLogo(@NonNull Long id, @NonNull String email, MultipartFile file) {
 
         Profile profile = profileRepository.findById(id)
-                .orElseThrow();
+                .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
+
+        if (!profile.getUser().getEmail().equals(email)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No eres dueño de este perfil");
+        }
 
         String url = fileStorageService.saveProfileLogo(id, file);
         profile.setLogoUrl(url);
@@ -74,6 +90,7 @@ public class ProfileService {
                 .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
 
         profileRepository.delete(profile);
+
         return profile;
     }
 }

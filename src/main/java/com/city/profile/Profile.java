@@ -36,6 +36,7 @@ public class Profile {
     private Category category;
 
     @OneToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
