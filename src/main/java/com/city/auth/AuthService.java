@@ -35,6 +35,7 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
+
     public void register(RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -68,4 +69,6 @@ public class AuthService {
 
         return jwtService.generateToken(user);
     }
+
+
 }

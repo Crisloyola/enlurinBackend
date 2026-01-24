@@ -11,6 +11,7 @@ import com.city.profile.Profile;
 import com.city.profile.ProfileService;
 import com.city.profile.dto.ProfileCreateRequest;
 import com.city.profile.dto.ProfileUpdateRequest;
+import com.city.security.CustomUserDetails;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -83,4 +84,29 @@ public class ProfileController {
     public void deleteProfile(@PathVariable Long id) {
         profileService.deleteProfile(id);
     }
+
+    @GetMapping("/public/{slug}")
+    public Profile getPublicProfile(@PathVariable String slug) {
+        return profileService.getBySlug(slug);
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/profiles/me")
+    public Profile getMyProfile(
+            @AuthenticationPrincipal CustomUserDetails user
+    ) {
+        return profileService.getMyProfile(user.getUsername());
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PutMapping("/profiles/me")
+    public Profile updateProfile(
+            @AuthenticationPrincipal CustomUserDetails user,
+            @RequestBody ProfileUpdateRequest request
+    ) {
+        return profileService.updateProfile(user.getUsername(), request);
+    }
+
+
+
 }

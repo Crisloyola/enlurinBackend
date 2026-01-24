@@ -93,4 +93,16 @@ public class ProfileService {
 
         return profile;
     }
+
+
+    public Profile getBySlug(String slug) {
+    return profileRepository.findBySlug(slug)
+            .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
+    }
+
+    public Profile getMyProfile(String email) {
+    return profileRepository.findByUser_Email(email)
+            .orElseThrow(() -> new RuntimeException("El usuario no tiene perfil"));
+    }
+
 }
