@@ -41,12 +41,13 @@ public class AuthController {
     }
 
     @GetMapping("/user")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<UserResponse> getUser(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        User user = userDetails.getUser();
-        return ResponseEntity.ok(UserResponse.from(user));
+        return ResponseEntity.ok(UserResponse.from(userDetails.getUser()));
     }
+
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin")
