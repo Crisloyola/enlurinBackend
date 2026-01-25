@@ -2,8 +2,11 @@ package com.city.files;
 
 import java.io.IOException;
 import java.nio.file.*;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class FileStorageService {
@@ -19,9 +22,12 @@ public class FileStorageService {
 
             Files.write(path, file.getBytes());
 
-            return "/uploads/" + filename;
+            return "/uploads/logos/" + filename;
         } catch (IOException e) {
-            throw new RuntimeException("Error al guardar archivo", e);
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Error al guardar archivo"
+            );
         }
     }
 }

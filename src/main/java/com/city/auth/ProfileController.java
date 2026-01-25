@@ -1,5 +1,6 @@
 package com.city.auth;
 
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -71,7 +72,7 @@ public class ProfileController {
     public Profile uploadLogo(
         @AuthenticationPrincipal UserDetails user,
         @PathVariable Long id,
-        @RequestParam MultipartFile file
+        @RequestParam("file") MultipartFile file
     ) {
         return profileService.uploadLogo(
                 id,
@@ -106,7 +107,6 @@ public class ProfileController {
     ) {
         return profileService.updateProfile(user.getUsername(), request);
     }
-
 
 
 }

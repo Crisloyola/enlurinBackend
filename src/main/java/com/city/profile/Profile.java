@@ -3,10 +3,19 @@ package com.city.profile;
 import com.city.category.Category;
 import com.city.district.District;
 import com.city.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "profiles")
+@JsonIgnoreProperties({"user"})
+@Getter
+@Setter
+@NoArgsConstructor
 public class Profile {
 
     @Id
@@ -35,45 +44,8 @@ public class Profile {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @OneToOne
-    @ManyToOne(optional = false)
+    @OneToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    public Profile() {}
-
-    // GETTERS & SETTERS
-    public String getLogoUrl() {
-        return logoUrl;
-    }
-    public void setLogoUrl(String logoUrl) {
-        this.logoUrl = logoUrl;
-    }
-    public Long getId() { return id; }
-    public String getBusinessName() { return businessName; }
-    public void setBusinessName(String businessName) { this.businessName = businessName; }
-
-    public String getSlug() { return slug; }
-    public void setSlug(String slug) { this.slug = slug; }
-
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public String getPhone() { return phone; }
-    public void setPhone(String phone) { this.phone = phone; }
-
-    public String getAddress() { return address; }
-    public void setAddress(String address) { this.address = address; }
-
-    public String getLogo() { return logo; }
-    public void setLogo(String logo) { this.logo = logo; }
-
-    public District getDistrict() { return district; }
-    public void setDistrict(District district) { this.district = district; }
-
-    public Category getCategory() { return category; }
-    public void setCategory(Category category) { this.category = category; }
-
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
 }

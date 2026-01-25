@@ -1,5 +1,8 @@
 package com.city.profile;
 
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import com.city.files.FileStorageService;
@@ -11,7 +14,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.city.profile.dto.ProfileCreateRequest;
+
 import com.city.profile.dto.ProfileUpdateRequest;
+
+
 
 @Service
 public class ProfileService {
@@ -69,7 +75,7 @@ public class ProfileService {
         return profileRepository.save(profile);
     }
 
-    public Profile uploadLogo(@NonNull Long id, @NonNull String email, MultipartFile file) {
+    public Profile uploadLogo(@NonNull Long id, @NonNull String email, @NonNull MultipartFile file) {
 
         Profile profile = profileRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
@@ -89,7 +95,7 @@ public class ProfileService {
         Profile profile = profileRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
 
-        profileRepository.delete(profile);
+        profileRepository.delete( profile);
 
         return profile;
     }
@@ -105,4 +111,18 @@ public class ProfileService {
             .orElseThrow(() -> new RuntimeException("El usuario no tiene perfil"));
     }
 
+    public Profile getByEmail(String email){
+        return profileRepository.findByUser_Email(email)
+            .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
+    }
+
+    public Profile getProfileBySlug(String slug) {
+    return profileRepository.findBySlug(slug)
+            .orElseThrow(() ->
+                    new ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "Perfil no encontrado"
+                    )
+            );
+    }
 }
