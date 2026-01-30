@@ -129,5 +129,13 @@ public class ProfileController {
         return profileService.getPublicProfilesByDistrict("Lurin");
         }
 
+        @GetMapping("/public/search")
+        public List<ProfilePublicResponse> search(
+                @RequestParam(required = false) String q,
+                @RequestParam(required = false) String category
+        ) {
+        return profileService.searchPublicProfiles(q, category);
+        }
+
 
 }

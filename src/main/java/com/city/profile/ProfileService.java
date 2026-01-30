@@ -157,11 +157,72 @@ public class ProfileService {
                         .toList();
         }
 
+        public List<ProfilePublicResponse> searchPublicProfiles(
+                String q,
+                String category
+        ) {
+        return profileRepository
+                .searchPublicProfiles(
+                        ProfileStatus.ACTIVE,
+                        "Lurin",
+                        q,
+                        category
+                )
+                .stream()
+                .map(ProfilePublicResponse::from)
+                .toList();
+        }
+
         // Público: ver perfil por slug
         public ProfileDetailResponse getPublicProfileBySlug(String slug) {
                Profile profile = profileRepository
             .findBySlugAndStatus(slug, ProfileStatus.ACTIVE)
             .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
                 return ProfileDetailResponse.from(profile);
+        }
+
+        public List<ProfilePublicResponse> getPublicProfiles(
+                String district,
+                String category,
+                String q
+        ) {
+
+        List<Profile> profiles;
+
+        if (category != null && q != null) {
+                profiles = profileRepository.search(
+                        ProfileStatus.ACTIVE,
+                        district,
+                        q
+                ).stream()
+                .filter(p -> p.getCategory().getName().equalsIgnoreCase(category))
+                .toList();
+
+        } else if (category != null) {
+                profiles = profileRepository
+                        .findByStatusAndDistrict_NameAndCategory_Name(
+                                ProfileStatus.ACTIVE,
+                                district,
+                                category
+                        );
+
+        } else if (q != null) {
+                profiles = profileRepository.search(
+                        ProfileStatus.ACTIVE,
+                        district,
+                        q
+                );
+
+        } else {
+                profiles = profileRepository
+                        .findByStatusAndDistrict_Name(
+                                ProfileStatus.ACTIVE,
+                                district
+                        );
+        }
+
+        return profiles.stream()
+                .map(ProfilePublicResponse::from)
+                .toList();
         }
 }

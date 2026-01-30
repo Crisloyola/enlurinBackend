@@ -28,6 +28,12 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
         String districtSlug
     );
 
+    List<Profile> findByStatusAndDistrict_NameAndCategory_Name(
+            ProfileStatus status,
+            String district,
+            String category
+    );
+
     @Query("""
         SELECT p FROM Profile p
         WHERE
@@ -41,6 +47,37 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
             @Param("district") String district,
             Pageable pageable
     );
+
+    @Query("""
+        SELECT p FROM Profile p
+        WHERE p.status = :status
+        AND p.district.name = :district
+        AND (
+            LOWER(p.businessName) LIKE LOWER(CONCAT('%', :q, '%'))
+            OR LOWER(p.description) LIKE LOWER(CONCAT('%', :q, '%'))
+        )
+    """)
+    List<Profile> search(
+            @Param("status") ProfileStatus status,
+            @Param("district") String district,
+            @Param("q") String q
+    );
+
+    @Query("""
+        SELECT p FROM Profile p
+        WHERE p.status = :status
+        AND p.district.name = :district
+        AND (:q IS NULL OR LOWER(p.businessName) LIKE LOWER(CONCAT('%', :q, '%')))
+        AND (:category IS NULL OR p.category.slug = :category)
+        ORDER BY p.featured DESC, p.createdAt DESC
+    """)
+    List<Profile> searchPublicProfiles(
+            @Param("status") ProfileStatus status,
+            @Param("district") String district,
+            @Param("q") String q,
+            @Param("category") String category
+    );
+
      // público
     List<Profile> findByStatusAndDistrict_Name(
             ProfileStatus status,
