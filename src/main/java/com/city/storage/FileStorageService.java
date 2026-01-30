@@ -7,21 +7,22 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class FileStorageService {
 
-    private static final String BASE_PATH = "uploads/profiles/";
+   private final String uploadDir = "uploads/logos/";
 
-    public static String saveProfileLogo(Long profileId, MultipartFile file) {
+    public String saveProfileLogo(Long profileId, MultipartFile file) {
+
         try {
-            String filename = "logo-" + System.currentTimeMillis() + ".png";
-            Path dir = Paths.get(BASE_PATH + profileId);
-            Files.createDirectories(dir);
+            Files.createDirectories(Paths.get(uploadDir));
 
-            Path filePath = dir.resolve(filename);
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            String filename = "profile_" + profileId + "_" + file.getOriginalFilename();
+            Path path = Paths.get(uploadDir + filename);
 
-            return "/uploads/profiles/" + profileId + "/" + filename;
+            Files.write(path, file.getBytes());
+
+            return "/uploads/logos/" + filename;
 
         } catch (IOException e) {
-            throw new RuntimeException("Error al guardar imagen", e);
+            throw new RuntimeException("Error al guardar el logo");
         }
     }
 }
