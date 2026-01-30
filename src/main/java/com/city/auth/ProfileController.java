@@ -3,11 +3,14 @@ package com.city.auth;
 import com.city.profile.Profile;
 import com.city.profile.ProfileService;
 import com.city.profile.dto.ProfileCreateRequest;
+import com.city.profile.dto.ProfilePublicResponse;
 import com.city.profile.dto.ProfileResponse;
 import com.city.profile.dto.ProfileUpdateRequest;
 import com.city.security.CustomUserDetails;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -98,4 +101,33 @@ public class ProfileController {
                 profileService.getBySlug(slug)
         );
     }
+
+        // 🔥 ADMIN: ver perfiles pendientes
+        @PreAuthorize("hasRole('ADMIN')")
+        @GetMapping("/admin/pending")
+        public List<Profile> getPendingProfiles() {
+        return profileService.getPendingProfiles();
+        }
+
+        // ✅ ADMIN: aprobar perfil
+        @PreAuthorize("hasRole('ADMIN')")
+        @PutMapping("/admin/{id}/approve")
+        public Profile approveProfile(@PathVariable Long id) {
+        return profileService.approveProfile(id);
+        }
+
+        // ⛔ ADMIN: suspender perfil
+        @PreAuthorize("hasRole('ADMIN')")
+        @PutMapping("/admin/{id}/suspend")
+        public Profile suspendProfile(@PathVariable Long id) {
+        return profileService.suspendProfile(id);
+        }
+
+        // 🌍 Público: negocios activos en Lurín
+        @GetMapping("/public")
+        public List<ProfilePublicResponse> getPublicProfiles() {
+        return profileService.getPublicProfilesByDistrict("Lurin");
+        }
+
+
 }

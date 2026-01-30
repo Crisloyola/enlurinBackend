@@ -13,9 +13,11 @@ import java.util.Optional;
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
     Optional<Profile> findByUser_Id(Long userId);
+    List<Profile> findByStatus(ProfileStatus status);
     Optional<Profile> findBySlug(String slug);
     Optional<Profile> findByUser_Email(String email);
-     Optional<Profile> findBySlugAndCategory_SlugAndDistrict_Slug(
+
+    Optional<Profile> findBySlugAndCategory_SlugAndDistrict_Slug(
         String slug,
         String categorySlug,
         String districtSlug
@@ -39,4 +41,16 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
             @Param("district") String district,
             Pageable pageable
     );
+     // público
+    List<Profile> findByStatusAndDistrict_Name(
+            ProfileStatus status,
+            String districtName
+    );
+
+    Optional<Profile> findBySlugAndStatus(
+            String slug,
+            ProfileStatus status
+    );
+
+
 }

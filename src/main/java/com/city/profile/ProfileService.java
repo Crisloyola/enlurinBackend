@@ -1,8 +1,7 @@
 package com.city.profile;
 
-import java.util.stream.Collectors;
+import java.util.List;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import com.city.files.FileStorageService;
@@ -14,7 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.city.profile.dto.ProfileCreateRequest;
-
+import com.city.profile.dto.ProfileDetailResponse;
+import com.city.profile.dto.ProfilePublicResponse;
 import com.city.profile.dto.ProfileUpdateRequest;
 
 
@@ -125,4 +125,43 @@ public class ProfileService {
                     )
             );
     }
+
+        // ADMIN: aprobar perfil
+        public Profile approveProfile(Long id) {
+        Profile profile = profileRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
+
+        profile.setStatus(ProfileStatus.ACTIVE);
+        return profileRepository.save(profile);
+        }
+
+        // ADMIN: suspender perfil
+        public Profile suspendProfile(Long id) {
+        Profile profile = profileRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
+
+        profile.setStatus(ProfileStatus.PENDING);
+        return profileRepository.save(profile);
+        }
+
+        // ADMIN: listar pendientes
+        public List<Profile> getPendingProfiles() {
+        return profileRepository.findByStatus(ProfileStatus.PENDING);
+        }
+
+        public List<ProfilePublicResponse> getPublicProfilesByDistrict(String district) {
+                return profileRepository
+                        .findByStatusAndDistrict_Name(ProfileStatus.ACTIVE, district)
+                        .stream()
+                        .map(ProfilePublicResponse::from)
+                        .toList();
+        }
+
+        // Público: ver perfil por slug
+        public ProfileDetailResponse getPublicProfileBySlug(String slug) {
+               Profile profile = profileRepository
+            .findBySlugAndStatus(slug, ProfileStatus.ACTIVE)
+            .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
+                return ProfileDetailResponse.from(profile);
+        }
 }

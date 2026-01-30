@@ -48,4 +48,8 @@ public class Profile {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ProfileStatus status = ProfileStatus.PENDING;
+
 }
