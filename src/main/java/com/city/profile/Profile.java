@@ -1,5 +1,9 @@
 package com.city.profile;
 
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import com.city.category.Category;
 import com.city.district.District;
 import com.city.user.User;
@@ -51,5 +55,12 @@ public class Profile {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProfileStatus status = ProfileStatus.PENDING;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    // ⭐ NUEVO (para destacados)
+    @Column(nullable = false)
+    private boolean featured = false;
 
 }

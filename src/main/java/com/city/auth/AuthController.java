@@ -5,7 +5,6 @@ import com.city.auth.dto.LoginRequest;
 import com.city.auth.dto.RegisterRequest;
 import com.city.auth.dto.UserResponse;
 import com.city.security.CustomUserDetails;
-import com.city.user.User;
 
 
 import org.springframework.http.ResponseEntity;
@@ -66,9 +65,6 @@ public class AuthController {
     public String bloqueado() {
         return "Nunca accesible";
     }
-
-
-
 
 
 }

@@ -1,9 +1,10 @@
 package com.city.profile;
-import org.springdoc.core.converters.models.Pageable;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -35,11 +36,11 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
     );
 
     @Query("""
-        SELECT p FROM Profile p
-        WHERE
-            (:q IS NULL OR LOWER(p.businessName) LIKE LOWER(CONCAT('%', :q, '%')))
-        AND (:category IS NULL OR p.category = :category)
-        AND (:district IS NULL OR p.district = :district)
+    SELECT p FROM Profile p
+    WHERE p.status = 'ACTIVE'
+    AND (:q IS NULL OR LOWER(p.businessName) LIKE LOWER(CONCAT('%', :q, '%')))
+    AND (:category IS NULL OR p.category.slug = :category)
+    AND (:district IS NULL OR p.district.slug = :district)
     """)
     Page<Profile> searchPublic(
             @Param("q") String q,
