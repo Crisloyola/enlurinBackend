@@ -90,5 +90,11 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
             ProfileStatus status
     );
 
+    @Query("SELECT p FROM Profile p LEFT JOIN FETCH p.category LEFT JOIN FETCH p.district LEFT JOIN FETCH p.user WHERE p.slug = :slug")
+    Optional<Profile> findBySlugWithRelations(@Param("slug") String slug);
+
+    @Query("SELECT p FROM Profile p LEFT JOIN FETCH p.category LEFT JOIN FETCH p.district LEFT JOIN FETCH p.user WHERE p.user.email = :email")
+    Optional<Profile> findByUser_EmailWithRelations(@Param("email") String email);
+
 
 }
