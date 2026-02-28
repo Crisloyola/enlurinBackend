@@ -1,7 +1,6 @@
 package com.city.common;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -38,7 +37,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errors);
     }
 
-    // ❌ 400 - Runtime controlado
+    // 🔍 404/400/… - errores con estado explícito
+    @ExceptionHandler(org.springframework.web.server.ResponseStatusException.class)
+    public ResponseEntity<?> handleResponseStatus(org.springframework.web.server.ResponseStatusException ex) {
+        // ResponseStatusException provides HttpStatusCode instead of HttpStatus
+        org.springframework.http.HttpStatus status = org.springframework.http.HttpStatus.resolve(
+                ex.getStatusCode().value()
+        );
+        if (status == null) {
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        return build(status, ex.getReason());
+    }
+
+    // ❌ 400 - Runtime controlado (otros RuntimeException)
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> handleRuntime(RuntimeException ex) {
         return build(HttpStatus.BAD_REQUEST, ex.getMessage());

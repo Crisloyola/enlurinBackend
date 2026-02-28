@@ -1,6 +1,5 @@
 package com.city.profile;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,15 +7,23 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admin/profiles")
-@RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminProfileController {
 
     private final AdminProfileService adminProfileService;
 
+    public AdminProfileController(AdminProfileService adminProfileService) {
+        this.adminProfileService = adminProfileService;
+    }
+
     @GetMapping
     public List<Profile> listByStatus(@RequestParam ProfileStatus status) {
         return adminProfileService.listByStatus(status);
+    }
+
+    @GetMapping("/{id}")
+    public Profile get(@PathVariable Long id) {
+        return adminProfileService.findById(id);
     }
 
     @PutMapping("/{id}/approve")

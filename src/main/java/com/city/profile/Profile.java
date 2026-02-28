@@ -10,16 +10,11 @@ import com.city.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+// Lombok removed: manual getters/setters below
 
 @Entity
 @Table(name = "profiles")
 @JsonIgnoreProperties({"user"})
-@Getter
-@Setter
-@NoArgsConstructor
 public class Profile {
 
     @Id
@@ -40,12 +35,12 @@ public class Profile {
     @Column(length = 255)
     private String logoUrl;
 
-    @ManyToOne
-    @JoinColumn(name = "district_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "district_id", nullable = true)
     private District district;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "category_id", nullable = true)
     private Category category;
 
     @OneToOne(optional = false)
@@ -62,5 +57,50 @@ public class Profile {
     // ⭐ NUEVO (para destacados)
     @Column(nullable = false)
     private boolean featured = false;
+
+    // constructors, getters and setters generated manually
+    public Profile() {}
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getBusinessName() { return businessName; }
+    public void setBusinessName(String businessName) { this.businessName = businessName; }
+
+    public String getSlug() { return slug; }
+    public void setSlug(String slug) { this.slug = slug; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+
+    public String getLogo() { return logo; }
+    public void setLogo(String logo) { this.logo = logo; }
+
+    public String getLogoUrl() { return logoUrl; }
+    public void setLogoUrl(String logoUrl) { this.logoUrl = logoUrl; }
+
+    public District getDistrict() { return district; }
+    public void setDistrict(District district) { this.district = district; }
+
+    public Category getCategory() { return category; }
+    public void setCategory(Category category) { this.category = category; }
+
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+
+    public ProfileStatus getStatus() { return status; }
+    public void setStatus(ProfileStatus status) { this.status = status; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    // no setter for createdAt
+
+    public boolean isFeatured() { return featured; }
+    public void setFeatured(boolean featured) { this.featured = featured; }
 
 }

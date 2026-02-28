@@ -1,11 +1,8 @@
 package com.city.profile.dto;
 
 import com.city.profile.Profile;
-import lombok.Builder;
-import lombok.Getter;
+// lombok removed
 
-@Getter
-@Builder
 public class ProfileDetailResponse {
 
     private Long id;
@@ -17,16 +14,36 @@ public class ProfileDetailResponse {
     private String category;
     private String district;
 
+    public ProfileDetailResponse(Long id, String businessName, String description, String phone, String address, String logoUrl, String category, String district) {
+        this.id = id;
+        this.businessName = businessName;
+        this.description = description;
+        this.phone = phone;
+        this.address = address;
+        this.logoUrl = logoUrl;
+        this.category = category;
+        this.district = district;
+    }
+
+    public Long getId() { return id; }
+    public String getBusinessName() { return businessName; }
+    public String getDescription() { return description; }
+    public String getPhone() { return phone; }
+    public String getAddress() { return address; }
+    public String getLogoUrl() { return logoUrl; }
+    public String getCategory() { return category; }
+    public String getDistrict() { return district; }
+
     public static ProfileDetailResponse from(Profile profile) {
-        return ProfileDetailResponse.builder()
-                .id(profile.getId())
-                .businessName(profile.getBusinessName())
-                .description(profile.getDescription())
-                .phone(profile.getPhone())
-                .address(profile.getAddress())
-                .logoUrl(profile.getLogoUrl())
-                .category(profile.getCategory().getName())
-                .district(profile.getDistrict().getName())
-                .build();
+        return new ProfileDetailResponse(
+                profile.getId(),
+                profile.getBusinessName(),
+                profile.getDescription(),
+                profile.getPhone(),
+                profile.getAddress(),
+                profile.getLogoUrl(),
+                profile.getCategory().getName(),
+                profile.getDistrict().getName()
+        );
     }
 }
