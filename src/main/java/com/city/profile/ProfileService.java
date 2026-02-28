@@ -19,6 +19,7 @@ import com.city.profile.dto.ProfileUpdateRequest;
 
 
 
+
 @Service
 public class ProfileService {
 
@@ -163,6 +164,19 @@ public class ProfileService {
                         .toList();
         }
 
+        /**
+         * Devuelve todos los perfiles activos sin aplicar ningún filtro de distrito.
+         * Útil para la nueva ruta `/profiles/public/all` que el front solicita cuando
+         * quiere mostrar "todos los servicios activados".
+         */
+        public List<ProfilePublicResponse> getAllActiveProfiles() {
+                return profileRepository
+                        .findByStatus(ProfileStatus.ACTIVE)
+                        .stream()
+                        .map(ProfilePublicResponse::from)
+                        .toList();
+        }
+
         public List<ProfilePublicResponse> searchPublicProfiles(
                 String q,
                 String category
@@ -194,37 +208,60 @@ public class ProfileService {
         ) {
 
         List<Profile> profiles;
+        boolean hasDistrict = district != null && !district.isBlank();
 
         if (category != null && q != null) {
-                profiles = profileRepository.search(
-                        ProfileStatus.ACTIVE,
-                        district,
-                        q
-                ).stream()
-                .filter(p -> p.getCategory().getName().equalsIgnoreCase(category))
-                .toList();
-
-        } else if (category != null) {
-                profiles = profileRepository
-                        .findByStatusAndDistrict_NameAndCategory_Name(
+                if (hasDistrict) {
+                        profiles = profileRepository.search(
                                 ProfileStatus.ACTIVE,
                                 district,
-                                category
-                        );
+                                q
+                        ).stream()
+                        .filter(p -> p.getCategory().getName().equalsIgnoreCase(category))
+                        .toList();
+                } else {
+                        // repository.searchPublic handles null filters
+                        profiles = profileRepository.searchPublic(q, category, null, org.springframework.data.domain.Pageable.unpaged())
+                                .getContent();
+                }
+
+        } else if (category != null) {
+                if (hasDistrict) {
+                        profiles = profileRepository
+                                .findByStatusAndDistrict_NameAndCategory_Name(
+                                        ProfileStatus.ACTIVE,
+                                        district,
+                                        category
+                                );
+                } else {
+                        profiles = profileRepository.findByStatus(ProfileStatus.ACTIVE)
+                                .stream()
+                                .filter(p -> p.getCategory().getName().equalsIgnoreCase(category))
+                                .toList();
+                }
 
         } else if (q != null) {
-                profiles = profileRepository.search(
-                        ProfileStatus.ACTIVE,
-                        district,
-                        q
-                );
+                if (hasDistrict) {
+                        profiles = profileRepository.search(
+                                ProfileStatus.ACTIVE,
+                                district,
+                                q
+                        );
+                } else {
+                        profiles = profileRepository.searchPublic(q, null, null, org.springframework.data.domain.Pageable.unpaged())
+                                .getContent();
+                }
 
         } else {
-                profiles = profileRepository
-                        .findByStatusAndDistrict_Name(
-                                ProfileStatus.ACTIVE,
-                                district
-                        );
+                if (hasDistrict) {
+                        profiles = profileRepository
+                                .findByStatusAndDistrict_Name(
+                                        ProfileStatus.ACTIVE,
+                                        district
+                                );
+                } else {
+                        profiles = profileRepository.findByStatus(ProfileStatus.ACTIVE);
+                }
         }
 
         return profiles.stream()

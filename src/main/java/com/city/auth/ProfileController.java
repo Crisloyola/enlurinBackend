@@ -123,18 +123,31 @@ public class ProfileController {
         return profileService.suspendProfile(id);
         }
 
-        // 🌍 Público: negocios activos en Lurín
+        // 🌍 Público: listado general de perfiles activos
+        // Permite pasar parámetros opcionales. Si no se especifica distrito
+        // devolverá todos los servicios activos del sistema.
         @GetMapping("/public")
-        public List<ProfilePublicResponse> getPublicProfiles() {
-        return profileService.getPublicProfilesByDistrict("Lurin");
+        public List<ProfilePublicResponse> getPublicProfiles(
+                @RequestParam(required = false) String district,
+                @RequestParam(required = false) String category,
+                @RequestParam(required = false) String q
+        ) {
+            return profileService.getPublicProfiles(district, category, q);
         }
 
+        // antiguo endpoint de búsqueda (compatible con cliente existente)
         @GetMapping("/public/search")
         public List<ProfilePublicResponse> search(
                 @RequestParam(required = false) String q,
                 @RequestParam(required = false) String category
         ) {
-        return profileService.searchPublicProfiles(q, category);
+            return profileService.searchPublicProfiles(q, category);
+        }
+
+        // adicional: todos los servicios/perfiles activos sin filtros
+        @GetMapping("/public/all")
+        public List<ProfilePublicResponse> getAllActiveProfiles() {
+            return profileService.getAllActiveProfiles();
         }
 
 

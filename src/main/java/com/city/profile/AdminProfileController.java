@@ -1,9 +1,13 @@
 package com.city.profile;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import com.city.profile.dto.ProfilePublicResponse;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/admin/profiles")
@@ -17,8 +21,25 @@ public class AdminProfileController {
     }
 
     @GetMapping
-    public List<Profile> listByStatus(@RequestParam ProfileStatus status) {
-        return adminProfileService.listByStatus(status);
+    public ResponseEntity<?> listByStatus(
+        @RequestParam(required = false) String status
+    ) {
+        try {
+            ProfileStatus profileStatus = ProfileStatus.PENDING;
+            if (status != null && !status.isBlank()) {
+                profileStatus = ProfileStatus.valueOf(status.trim().toUpperCase());
+            }
+            List<ProfilePublicResponse> result = adminProfileService.listByStatus(profileStatus)
+                .stream()
+                .map(ProfilePublicResponse::from)
+                .collect(Collectors.toList());
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            // Esto nos dirá exactamente qué falla
+            return ResponseEntity.badRequest().body(
+                "Error: " + e.getClass().getName() + " — " + e.getMessage()
+            );
+        }
     }
 
     @GetMapping("/{id}")
