@@ -11,6 +11,7 @@ public class ProfileResponse {
     private String phone;
     private String address;
     private String logoUrl;
+    private String bannerUrl;
     private String category;
     private String district;
     private String status;
@@ -18,8 +19,8 @@ public class ProfileResponse {
 
     public ProfileResponse(Long id, String businessName, String slug,
                            String description, String phone, String address,
-                           String logoUrl, String category, String district,
-                           String status, boolean featured) {
+                           String logoUrl, String bannerUrl, String category,
+                           String district, String status, boolean featured) {
         this.id           = id;
         this.businessName = businessName;
         this.slug         = slug;
@@ -27,6 +28,7 @@ public class ProfileResponse {
         this.phone        = phone;
         this.address      = address;
         this.logoUrl      = logoUrl;
+        this.bannerUrl    = bannerUrl;
         this.category     = category;
         this.district     = district;
         this.status       = status;
@@ -40,6 +42,7 @@ public class ProfileResponse {
     public String getPhone()       { return phone; }
     public String getAddress()     { return address; }
     public String getLogoUrl()     { return logoUrl; }
+    public String getBannerUrl()   { return bannerUrl; }
     public String getCategory()    { return category; }
     public String getDistrict()    { return district; }
     public String getStatus()      { return status; }
@@ -54,6 +57,7 @@ public class ProfileResponse {
             p.getPhone(),
             p.getAddress(),
             p.getLogoUrl(),
+            p.getBannerUrl(),
             p.getCategory() != null ? p.getCategory().getName() : null,
             p.getDistrict()  != null ? p.getDistrict().getName()  : null,
             p.getStatus()    != null ? p.getStatus().name()        : null,

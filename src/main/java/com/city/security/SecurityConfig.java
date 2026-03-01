@@ -45,6 +45,7 @@ public class SecurityConfig {
                 "/auth/public",
                 "/auth/**",          // ← ya lo tienes pero verifica
                 "/negocio/**",
+                "/uploads/**",
                 "/profiles/public/**",
                 "/swagger-ui/**",
                 "/v3/api-docs/**"

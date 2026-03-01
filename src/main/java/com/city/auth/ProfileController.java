@@ -28,7 +28,6 @@ public class ProfileController {
         this.profileService = profileService;
     }
 
-    // 🔐 USER → crear perfil
     @PreAuthorize("hasRole('USER')")
     @PostMapping
     public ProfileResponse createProfile(
@@ -39,7 +38,6 @@ public class ProfileController {
         return ProfileResponse.from(profile);
     }
 
-    // 🔐 USER → ver su perfil
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/me")
     public ProfileResponse getMyProfile(
@@ -50,7 +48,6 @@ public class ProfileController {
         );
     }
 
-    // 🔐 USER → actualizar su perfil
     @PreAuthorize("hasRole('USER')")
     @PutMapping("/me")
     public ProfileResponse updateMyProfile(
@@ -62,7 +59,6 @@ public class ProfileController {
         );
     }
 
-    // 🔐 USER → subir logo
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/{id}/logo")
     public ProfileResponse uploadLogo(
@@ -75,7 +71,17 @@ public class ProfileController {
         );
     }
 
-    // 🔥 ADMIN → actualizar cualquier perfil
+        @PreAuthorize("hasRole('USER')")
+        @PostMapping("/me/banner")
+        public ProfileResponse uploadBanner(
+                @RequestParam("file") MultipartFile file,
+                @AuthenticationPrincipal CustomUserDetails user
+        ) {
+        return ProfileResponse.from(
+                profileService.uploadBanner(user.getUsername(), file)
+        );
+        }
+
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ProfileResponse adminUpdateProfile(
@@ -87,14 +93,12 @@ public class ProfileController {
         );
     }
 
-    // 🔥 ADMIN → eliminar perfil
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public void deleteProfile(@PathVariable Long id) {
         profileService.deleteProfile(id);
     }
 
-    // 🌍 PÚBLICO → ver perfil por slug
     @GetMapping("/public/{slug}")
     public ProfileResponse getPublicProfile(@PathVariable String slug) {
         return ProfileResponse.from(
@@ -102,53 +106,43 @@ public class ProfileController {
         );
     }
 
-        // 🔥 ADMIN: ver perfiles pendientes
-        @PreAuthorize("hasRole('ADMIN')")
-        @GetMapping("/admin/pending")
-        public List<Profile> getPendingProfiles() {
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/admin/pending")
+    public List<Profile> getPendingProfiles() {
         return profileService.getPendingProfiles();
-        }
+    }
 
-        // ✅ ADMIN: aprobar perfil
-        @PreAuthorize("hasRole('ADMIN')")
-        @PutMapping("/admin/{id}/approve")
-        public Profile approveProfile(@PathVariable Long id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/admin/{id}/approve")
+    public Profile approveProfile(@PathVariable Long id) {
         return profileService.approveProfile(id);
-        }
+    }
 
-        // ⛔ ADMIN: suspender perfil
-        @PreAuthorize("hasRole('ADMIN')")
-        @PutMapping("/admin/{id}/suspend")
-        public Profile suspendProfile(@PathVariable Long id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/admin/{id}/suspend")
+    public Profile suspendProfile(@PathVariable Long id) {
         return profileService.suspendProfile(id);
-        }
+    }
 
-        // 🌍 Público: listado general de perfiles activos
-        // Permite pasar parámetros opcionales. Si no se especifica distrito
-        // devolverá todos los servicios activos del sistema.
-        @GetMapping("/public")
-        public List<ProfilePublicResponse> getPublicProfiles(
-                @RequestParam(required = false) String district,
-                @RequestParam(required = false) String category,
-                @RequestParam(required = false) String q
-        ) {
-            return profileService.getPublicProfiles(district, category, q);
-        }
+    @GetMapping("/public")
+    public List<ProfilePublicResponse> getPublicProfiles(
+            @RequestParam(required = false) String district,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String q
+    ) {
+        return profileService.getPublicProfiles(district, category, q);
+    }
 
-        // antiguo endpoint de búsqueda (compatible con cliente existente)
-        @GetMapping("/public/search")
-        public List<ProfilePublicResponse> search(
-                @RequestParam(required = false) String q,
-                @RequestParam(required = false) String category
-        ) {
-            return profileService.searchPublicProfiles(q, category);
-        }
+    @GetMapping("/public/search")
+    public List<ProfilePublicResponse> search(
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) String category
+    ) {
+        return profileService.searchPublicProfiles(q, category);
+    }
 
-        // adicional: todos los servicios/perfiles activos sin filtros
-        @GetMapping("/public/all")
-        public List<ProfilePublicResponse> getAllActiveProfiles() {
-            return profileService.getAllActiveProfiles();
-        }
-
-
+    @GetMapping("/public/all")
+    public List<ProfilePublicResponse> getAllActiveProfiles() {
+        return profileService.getAllActiveProfiles();
+    }
 }

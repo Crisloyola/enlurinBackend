@@ -9,7 +9,6 @@ import com.city.district.District;
 import com.city.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-// Lombok removed: manual getters/setters below
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -41,10 +40,13 @@ public class Profile {
     private String description;
     private String phone;
     private String address;
-    private String logo; // nombre del archivo
+    private String logo;
 
     @Column(length = 255)
     private String logoUrl;
+
+    @Column(length = 255)
+    private String bannerUrl;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "district_id", nullable = true)
@@ -67,11 +69,9 @@ public class Profile {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    // ⭐ NUEVO (para destacados)
     @Column(nullable = false)
     private boolean featured = false;
 
-    // constructors, getters and setters generated manually
     public Profile() {}
 
     public Long getId() { return id; }
@@ -98,6 +98,9 @@ public class Profile {
     public String getLogoUrl() { return logoUrl; }
     public void setLogoUrl(String logoUrl) { this.logoUrl = logoUrl; }
 
+    public String getBannerUrl() { return bannerUrl; }
+    public void setBannerUrl(String bannerUrl) { this.bannerUrl = bannerUrl; }
+
     public District getDistrict() { return district; }
     public void setDistrict(District district) { this.district = district; }
 
@@ -111,9 +114,7 @@ public class Profile {
     public void setStatus(ProfileStatus status) { this.status = status; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
-    // no setter for createdAt
 
     public boolean isFeatured() { return featured; }
     public void setFeatured(boolean featured) { this.featured = featured; }
-
 }

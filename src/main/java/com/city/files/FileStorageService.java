@@ -15,19 +15,27 @@ public class FileStorageService {
 
     public String saveProfileLogo(Long profileId, MultipartFile file) {
         try {
-            Files.createDirectories(Paths.get(UPLOAD_DIR));
-
+            Files.createDirectories(Paths.get(UPLOAD_DIR + "logos/"));
             String filename = "profile_" + profileId + "_" + file.getOriginalFilename();
-            Path path = Paths.get(UPLOAD_DIR + filename);
-
+            Path path = Paths.get(UPLOAD_DIR + "logos/" + filename);
             Files.write(path, file.getBytes());
-
             return "/uploads/logos/" + filename;
         } catch (IOException e) {
             throw new ResponseStatusException(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Error al guardar archivo"
-            );
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Error al guardar logo");
+        }
+    }
+
+    public String saveBanner(Long profileId, MultipartFile file) {
+        try {
+            Files.createDirectories(Paths.get(UPLOAD_DIR + "banners/"));
+            String filename = "banner_" + profileId + "_" + file.getOriginalFilename();
+            Path path = Paths.get(UPLOAD_DIR + "banners/" + filename);
+            Files.write(path, file.getBytes());
+            return "/uploads/banners/" + filename;
+        } catch (IOException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Error al guardar banner");
         }
     }
 }

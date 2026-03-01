@@ -43,8 +43,6 @@ public class ProfileService {
         this.districtRepository = districtRepository;
     }
 
-    // ── helpers ──────────────────────────────────────────────────────────────
-
     private String toSlug(String text) {
         if (text == null) return null;
         return text.toLowerCase()
@@ -80,8 +78,6 @@ public class ProfileService {
                     .ifPresent(profile::setDistrict);
         }
     }
-
-    // ── public API ───────────────────────────────────────────────────────────
 
     @Transactional
     public Profile createProfile(String email, ProfileCreateRequest req) {
@@ -152,6 +148,16 @@ public class ProfileService {
 
         String url = fileStorageService.saveProfileLogo(id, file);
         profile.setLogoUrl(url);
+        return profileRepository.save(profile);
+    }
+
+    @Transactional
+    public Profile uploadBanner(@NonNull String email, @NonNull MultipartFile file) {
+        Profile profile = profileRepository.findByUser_EmailWithRelations(email)
+                .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
+
+        String url = fileStorageService.saveBanner(profile.getId(), file);
+        profile.setBannerUrl(url);
         return profileRepository.save(profile);
     }
 

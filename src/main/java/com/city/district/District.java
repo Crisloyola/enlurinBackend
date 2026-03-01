@@ -14,8 +14,7 @@ public class District {
     private String name;
 
     @Column(nullable = false, unique = true)
-        private String slug;
-
+    private String slug;
 
     public District() {}
 
@@ -23,6 +22,10 @@ public class District {
         this.name = name;
     }
 
-    public Long getId() { return id; }
+    public Long getId()     { return id; }
     public String getName() { return name; }
+    public String getSlug() { return slug; }  // ← FALTABA ESTO
+
+    public void setName(String name) { this.name = name; }
+    public void setSlug(String slug) { this.slug = slug; }
 }
