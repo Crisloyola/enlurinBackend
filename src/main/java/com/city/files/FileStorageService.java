@@ -11,15 +11,15 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class FileStorageService {
 
-    private static final String UPLOAD_DIR = "uploads/";
+    private static final String UPLOAD_DIR =
+            System.getProperty("user.dir") + "/uploads/";
 
     public String saveProfileLogo(Long profileId, MultipartFile file) {
         try {
-            Files.createDirectories(Paths.get(UPLOAD_DIR + "logos/"));
-            String filename = "profile_" + profileId + "_" + file.getOriginalFilename();
-            Path path = Paths.get(UPLOAD_DIR + "logos/" + filename);
-            Files.write(path, file.getBytes());
-            return "/uploads/logos/" + filename;
+            Files.createDirectories(Paths.get(UPLOAD_DIR));
+            String filename = "logo_" + profileId + "_" + file.getOriginalFilename();
+            Files.write(Paths.get(UPLOAD_DIR + filename), file.getBytes());
+            return "/uploads/" + filename;
         } catch (IOException e) {
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR, "Error al guardar logo");
@@ -28,11 +28,10 @@ public class FileStorageService {
 
     public String saveBanner(Long profileId, MultipartFile file) {
         try {
-            Files.createDirectories(Paths.get(UPLOAD_DIR + "banners/"));
+            Files.createDirectories(Paths.get(UPLOAD_DIR));
             String filename = "banner_" + profileId + "_" + file.getOriginalFilename();
-            Path path = Paths.get(UPLOAD_DIR + "banners/" + filename);
-            Files.write(path, file.getBytes());
-            return "/uploads/banners/" + filename;
+            Files.write(Paths.get(UPLOAD_DIR + filename), file.getBytes());
+            return "/uploads/" + filename;
         } catch (IOException e) {
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR, "Error al guardar banner");
