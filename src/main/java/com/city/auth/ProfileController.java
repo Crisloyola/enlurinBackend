@@ -1,6 +1,8 @@
 package com.city.auth;
 
 import com.city.profile.Profile;
+import com.city.profile.ProfileMedia;
+import com.city.profile.ProfileMediaRepository;
 import com.city.profile.ProfileService;
 import com.city.profile.dto.ProfileCreateRequest;
 import com.city.profile.dto.ProfilePublicResponse;
@@ -23,9 +25,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProfileController {
 
     private final ProfileService profileService;
+    private final ProfileMediaRepository mediaRepository; // ← AGREGAR
 
-    public ProfileController(ProfileService profileService) {
+    public ProfileController(ProfileService profileService,
+                             ProfileMediaRepository mediaRepository) { // ← AGREGAR
         this.profileService = profileService;
+        this.mediaRepository = mediaRepository; // ← AGREGAR
     }
 
     @PreAuthorize("hasRole('USER')")
@@ -40,12 +45,8 @@ public class ProfileController {
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/me")
-    public ProfileResponse getMyProfile(
-            @AuthenticationPrincipal CustomUserDetails user
-    ) {
-        return ProfileResponse.from(
-                profileService.getMyProfile(user.getUsername())
-        );
+    public ProfileResponse getMyProfile(@AuthenticationPrincipal CustomUserDetails user) {
+        return ProfileResponse.from(profileService.getMyProfile(user.getUsername()));
     }
 
     @PreAuthorize("hasRole('USER')")
@@ -54,9 +55,7 @@ public class ProfileController {
             @AuthenticationPrincipal CustomUserDetails user,
             @RequestBody ProfileUpdateRequest request
     ) {
-        return ProfileResponse.from(
-                profileService.updateProfile(user.getUsername(), request)
-        );
+        return ProfileResponse.from(profileService.updateProfile(user.getUsername(), request));
     }
 
     @PreAuthorize("hasRole('USER')")
@@ -66,21 +65,17 @@ public class ProfileController {
             @RequestParam("file") MultipartFile file,
             @AuthenticationPrincipal CustomUserDetails user
     ) {
-        return ProfileResponse.from(
-                profileService.uploadLogo(id, user.getUsername(), file)
-        );
+        return ProfileResponse.from(profileService.uploadLogo(id, user.getUsername(), file));
     }
 
-        @PreAuthorize("hasRole('USER')")
-        @PostMapping("/me/banner")
-        public ProfileResponse uploadBanner(
-                @RequestParam("file") MultipartFile file,
-                @AuthenticationPrincipal CustomUserDetails user
-        ) {
-        return ProfileResponse.from(
-                profileService.uploadBanner(user.getUsername(), file)
-        );
-        }
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/me/banner")
+    public ProfileResponse uploadBanner(
+            @RequestParam("file") MultipartFile file,
+            @AuthenticationPrincipal CustomUserDetails user
+    ) {
+        return ProfileResponse.from(profileService.uploadBanner(user.getUsername(), file));
+    }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
@@ -88,9 +83,7 @@ public class ProfileController {
             @PathVariable Long id,
             @RequestBody ProfileUpdateRequest request
     ) {
-        return ProfileResponse.from(
-                profileService.adminUpdateProfile(id, request)
-        );
+        return ProfileResponse.from(profileService.adminUpdateProfile(id, request));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -101,9 +94,7 @@ public class ProfileController {
 
     @GetMapping("/public/{slug}")
     public ProfileResponse getPublicProfile(@PathVariable String slug) {
-        return ProfileResponse.from(
-                profileService.getBySlug(slug)
-        );
+        return ProfileResponse.from(profileService.getBySlug(slug));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -144,5 +135,12 @@ public class ProfileController {
     @GetMapping("/public/all")
     public List<ProfilePublicResponse> getAllActiveProfiles() {
         return profileService.getAllActiveProfiles();
+    }
+
+    // ← ESTE ES EL MÉTODO CORREGIDO
+    @GetMapping("/public/{slug}/media")
+    public List<ProfileMedia> getPublicMedia(@PathVariable String slug) {
+        Profile profile = profileService.getBySlug(slug);
+        return mediaRepository.findByProfile_Id(profile.getId());
     }
 }

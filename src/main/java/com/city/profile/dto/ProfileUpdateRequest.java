@@ -8,6 +8,10 @@ public class ProfileUpdateRequest {
     private String address;
     private String categorySlug;
     private String districtSlug;
+    private String whatsapp;
+    private Double latitude;
+    private Double longitude;
+    private String schedule;
 
     public String getBusinessName()  { return businessName; }
     public String getDescription()   { return description; }
@@ -23,4 +27,13 @@ public class ProfileUpdateRequest {
     public void setAddress(String v)       { this.address = v; }
     public void setCategorySlug(String v)  { this.categorySlug = v; }
     public void setDistrictSlug(String v)  { this.districtSlug = v; }
+    public String getWhatsapp() { return whatsapp; }
+    public void setWhatsapp(String v) { this.whatsapp = v; }
+    public Double getLatitude() { return latitude; }
+    public void setLatitude(Double v) { this.latitude = v; }
+    public Double getLongitude() { return longitude; }
+    public void setLongitude(Double v) { this.longitude = v; }
+    public String getSchedule() { return schedule; }
+    public void setSchedule(String v) { this.schedule = v; }
+
 }

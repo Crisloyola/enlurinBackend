@@ -37,4 +37,19 @@ public class FileStorageService {
                     HttpStatus.INTERNAL_SERVER_ERROR, "Error al guardar banner");
         }
     }
+
+    public String saveMedia(Long profileId, String type, MultipartFile file) {
+    try {
+            String folder = UPLOAD_DIR + "media/" + profileId + "/";
+            Files.createDirectories(Paths.get(folder));
+            String filename = type.toLowerCase() + "_" +
+                            System.currentTimeMillis() + "_" +
+                            file.getOriginalFilename();
+            Files.write(Paths.get(folder + filename), file.getBytes());
+            return "/uploads/media/" + profileId + "/" + filename;
+        } catch (IOException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Error al guardar archivo");
+        }
+    }
 }
