@@ -8,6 +8,14 @@ public class ProfileCreateRequest {
     private String address;
     private String categorySlug;
     private String districtSlug;
+    private String whatsapp;
+    private Double latitude;
+    private Double longitude;
+    private String schedule;
+    private String instagram;
+    private String facebook;
+    private String youtube;
+    private String tiktok;
 
     public String getBusinessName()  { return businessName; }
     public String getDescription()   { return description; }
@@ -23,4 +31,20 @@ public class ProfileCreateRequest {
     public void setAddress(String v)       { this.address = v; }
     public void setCategorySlug(String v)  { this.categorySlug = v; }
     public void setDistrictSlug(String v)  { this.districtSlug = v; }
+    public String getWhatsapp() { return whatsapp; }
+    public void setWhatsapp(String v) { this.whatsapp = v; }
+    public Double getLatitude() { return latitude; }
+    public void setLatitude(Double v) { this.latitude = v; }
+    public Double getLongitude() { return longitude; }
+    public void setLongitude(Double v) { this.longitude = v; }
+    public String getSchedule() { return schedule; }
+    public void setSchedule(String v) { this.schedule = v; }
+    public String getInstagram() { return instagram; }
+    public void setInstagram(String v) { this.instagram = v; }
+    public String getFacebook() { return facebook; }
+    public void setFacebook(String v) { this.facebook = v; }
+    public String getYoutube() { return youtube; }
+    public void setYoutube(String v) { this.youtube = v; }
+    public String getTiktok() { return tiktok; }
+    public void setTiktok(String v) { this.tiktok = v; }
 }

@@ -65,6 +65,21 @@ public class Profile {
     @Column
     private String schedule; // "Lun-Vie 9am-6pm"
 
+    @Column private String instagram;
+    @Column private String facebook;
+    @Column private String youtube;
+    @Column private String tiktok;
+
+
+    public String getInstagram() { return instagram; }
+    public void setInstagram(String v) { this.instagram = v; }
+    public String getFacebook() { return facebook; }
+    public void setFacebook(String v) { this.facebook = v; }
+    public String getYoutube() { return youtube; }
+    public void setYoutube(String v) { this.youtube = v; }
+    public String getTiktok() { return tiktok; }
+    public void setTiktok(String v) { this.tiktok = v; }
+
     // Relación con galería
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore

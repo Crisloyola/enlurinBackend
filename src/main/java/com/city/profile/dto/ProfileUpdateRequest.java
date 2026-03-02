@@ -12,6 +12,10 @@ public class ProfileUpdateRequest {
     private Double latitude;
     private Double longitude;
     private String schedule;
+    private String instagram;
+    private String facebook;
+    private String youtube;
+    private String tiktok;
 
     public String getBusinessName()  { return businessName; }
     public String getDescription()   { return description; }
@@ -35,5 +39,13 @@ public class ProfileUpdateRequest {
     public void setLongitude(Double v) { this.longitude = v; }
     public String getSchedule() { return schedule; }
     public void setSchedule(String v) { this.schedule = v; }
+    public String getInstagram() { return instagram; }
+    public void setInstagram(String v) { this.instagram = v; }
+    public String getFacebook() { return facebook; }
+    public void setFacebook(String v) { this.facebook = v; }
+    public String getYoutube() { return youtube; }
+    public void setYoutube(String v) { this.youtube = v; }
+    public String getTiktok() { return tiktok; }
+    public void setTiktok(String v) { this.tiktok = v; }
 
 }

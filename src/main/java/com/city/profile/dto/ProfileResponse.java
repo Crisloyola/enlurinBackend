@@ -24,11 +24,19 @@ public class ProfileResponse {
     private Double longitude;
     private String schedule;
     private List<ProfileMedia> mediaItems;
+    private String instagram;
+    private String facebook;
+    private String youtube;
+    private String tiktok;
+
 
     public ProfileResponse(Long id, String businessName, String slug,
                            String description, String phone, String address,
                            String logoUrl, String bannerUrl, String category,
-                           String district, String status, boolean featured, String whatsapp, Double latitude, Double longitude, String schedule, List<ProfileMedia> mediaItems) {
+                           String district, String status, boolean featured,
+                           String whatsapp, Double latitude, Double longitude,
+                           String schedule, List<ProfileMedia> mediaItems,
+                           String instagram, String facebook, String youtube, String tiktok) {
         this.id           = id;
         this.businessName = businessName;
         this.slug         = slug;
@@ -46,6 +54,10 @@ public class ProfileResponse {
         this.longitude    = longitude;
         this.schedule     = schedule;
         this.mediaItems   = mediaItems;
+        this.instagram    = instagram;
+        this.facebook     = facebook;
+        this.youtube      = youtube;
+        this.tiktok       = tiktok;
     }
 
     public Long getId()            { return id; }
@@ -65,6 +77,10 @@ public class ProfileResponse {
     public Double getLongitude() { return longitude; }
     public String getSchedule() { return schedule; }
     public List<ProfileMedia> getMediaItems() { return mediaItems; }
+    public String getInstagram() { return instagram; }
+    public String getFacebook()  { return facebook; }
+    public String getYoutube()   { return youtube; }
+    public String getTiktok()    { return tiktok; }
 
     public static ProfileResponse from(Profile p) {
         return new ProfileResponse(
@@ -84,7 +100,11 @@ public class ProfileResponse {
             p.getLatitude(),
             p.getLongitude(),
             p.getSchedule(),
-            p.getMediaItems()
+            p.getMediaItems(),
+            p.getInstagram(),
+            p.getFacebook(),
+            p.getYoutube(),
+            p.getTiktok()
         );
     }
 }

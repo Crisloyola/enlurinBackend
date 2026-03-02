@@ -23,6 +23,10 @@ public class ProfilePublicResponse {
     private Double longitude;
     private String schedule;
     private List<ProfileMedia> mediaItems;
+    private String instagram;
+    private String facebook;
+    private String youtube;
+    private String tiktok;
 
    public static ProfilePublicResponse from(Profile profile) {
     ProfilePublicResponse dto = new ProfilePublicResponse();
@@ -39,6 +43,10 @@ public class ProfilePublicResponse {
     dto.latitude  = profile.getLatitude();
     dto.longitude = profile.getLongitude();
     dto.schedule  = profile.getSchedule();
+    dto.instagram = profile.getInstagram();
+    dto.facebook  = profile.getFacebook();
+    dto.youtube   = profile.getYoutube();
+    dto.tiktok    = profile.getTiktok();
     // Acceder con try/catch por si el proxy no está inicializado
     try {
         dto.category = profile.getCategory() != null ? profile.getCategory().getName() : null;
@@ -71,4 +79,8 @@ public class ProfilePublicResponse {
     public Double getLongitude()  { return longitude; }
     public String getSchedule()   { return schedule; }
     public List<ProfileMedia> getMediaItems() { return mediaItems; }
+    public String getInstagram() { return instagram; }
+    public String getFacebook()  { return facebook; }
+    public String getYoutube()   { return youtube; }
+    public String getTiktok()    { return tiktok; }
 }
