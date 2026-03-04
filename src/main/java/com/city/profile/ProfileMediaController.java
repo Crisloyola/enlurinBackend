@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;                          // ← NUEVO
 
 @RestController
 @RequestMapping("/profiles/me/media")
@@ -27,7 +28,7 @@ public class ProfileMediaController {
         this.fileStorageService = fileStorageService;
     }
 
-    // GET /profiles/me/media → listar galería
+    // GET /profiles/me/media
     @PreAuthorize("hasRole('USER')")
     @GetMapping
     public List<ProfileMedia> getMyMedia(
@@ -37,7 +38,7 @@ public class ProfileMediaController {
         return mediaRepository.findByProfile_Id(profile.getId());
     }
 
-    // POST /profiles/me/media?type=PHOTO|VIDEO|REEL → subir archivo
+    // POST /profiles/me/media → subir archivo (PHOTO)
     @PreAuthorize("hasRole('USER')")
     @PostMapping
     public ResponseEntity<ProfileMedia> uploadMedia(
@@ -60,7 +61,41 @@ public class ProfileMediaController {
         return ResponseEntity.ok(mediaRepository.save(media));
     }
 
-    // DELETE /profiles/me/media/{mediaId} → eliminar archivo
+    // POST /profiles/me/media/link → guardar link de YouTube, TikTok, Facebook  ← NUEVO
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/link")
+    public ResponseEntity<ProfileMedia> addVideoLink(
+            @RequestBody Map<String, String> body,
+            @AuthenticationPrincipal CustomUserDetails user) {
+
+        Profile profile = profileRepository.findByUser_Email(user.getUsername())
+                .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
+
+        String url   = body.get("url");
+        String type  = body.get("type");
+        String title = body.get("title");
+
+        if (url == null || url.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        ProfileMedia media = new ProfileMedia();
+        media.setProfile(profile);
+        media.setUrl(url);
+        media.setTitle(title);
+
+        try {
+            media.setType(ProfileMedia.MediaType.valueOf(
+                    type != null ? type.toUpperCase() : "VIDEO"
+            ));
+        } catch (IllegalArgumentException e) {
+            media.setType(ProfileMedia.MediaType.VIDEO);
+        }
+
+        return ResponseEntity.ok(mediaRepository.save(media));
+    }
+
+    // DELETE /profiles/me/media/{mediaId}
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/{mediaId}")
     public ResponseEntity<?> deleteMedia(
