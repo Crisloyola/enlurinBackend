@@ -55,6 +55,7 @@ public class ProfileService {
                 .replaceAll("(^-|-$)", "");
     }
 
+    // ── Campos básicos (businessName, description, phone, address, category, district) ──
     private void applyFields(Profile profile,
                               String businessName,
                               String description,
@@ -79,6 +80,30 @@ public class ProfileService {
         }
     }
 
+    // ── Campos extendidos (redes sociales, contacto, ubicación, horario) ──────
+    private void applyExtendedFields(Profile profile, ProfileUpdateRequest req) {
+        profile.setWhatsapp(req.getWhatsapp());
+        profile.setLatitude(req.getLatitude());
+        profile.setLongitude(req.getLongitude());
+        profile.setSchedule(req.getSchedule());
+        profile.setInstagram(req.getInstagram());
+        profile.setFacebook(req.getFacebook());
+        profile.setYoutube(req.getYoutube());
+        profile.setTiktok(req.getTiktok());
+    }
+
+    // ── Campos extendidos desde CreateRequest ────────────────────────────────
+    private void applyExtendedFields(Profile profile, ProfileCreateRequest req) {
+        profile.setWhatsapp(req.getWhatsapp());
+        profile.setLatitude(req.getLatitude());
+        profile.setLongitude(req.getLongitude());
+        profile.setSchedule(req.getSchedule());
+        profile.setInstagram(req.getInstagram());
+        profile.setFacebook(req.getFacebook());
+        profile.setYoutube(req.getYoutube());
+        profile.setTiktok(req.getTiktok());
+    }
+
     @Transactional
     public Profile createProfile(String email, ProfileCreateRequest req) {
         User user = userRepository.findByEmail(email).orElseThrow();
@@ -100,6 +125,9 @@ public class ProfileService {
                 req.getCategorySlug(),
                 req.getDistrictSlug());
 
+        // ← ANTES FALTABA ESTO: guardar redes sociales al crear
+        applyExtendedFields(profile, req);
+
         return profileRepository.save(profile);
     }
 
@@ -116,6 +144,9 @@ public class ProfileService {
                 req.getCategorySlug(),
                 req.getDistrictSlug());
 
+        // ← ANTES FALTABA ESTO: guardar redes sociales, horario, ubicación al editar
+        applyExtendedFields(profile, req);
+
         return profileRepository.save(profile);
     }
 
@@ -131,6 +162,9 @@ public class ProfileService {
                 req.getAddress(),
                 req.getCategorySlug(),
                 req.getDistrictSlug());
+
+        // ← También aplicar campos extendidos en update de admin
+        applyExtendedFields(profile, req);
 
         return profileRepository.save(profile);
     }

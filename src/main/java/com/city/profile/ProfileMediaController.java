@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;                          // ← NUEVO
+import java.util.Map;
 
 @RestController
 @RequestMapping("/profiles/me/media")
@@ -31,14 +31,13 @@ public class ProfileMediaController {
     // GET /profiles/me/media
     @PreAuthorize("hasRole('USER')")
     @GetMapping
-    public List<ProfileMedia> getMyMedia(
-            @AuthenticationPrincipal CustomUserDetails user) {
+    public List<ProfileMedia> getMyMedia(@AuthenticationPrincipal CustomUserDetails user) {
         Profile profile = profileRepository.findByUser_Email(user.getUsername())
                 .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
         return mediaRepository.findByProfile_Id(profile.getId());
     }
 
-    // POST /profiles/me/media → subir archivo (PHOTO)
+    // POST /profiles/me/media → subir archivo (foto)
     @PreAuthorize("hasRole('USER')")
     @PostMapping
     public ResponseEntity<ProfileMedia> uploadMedia(
@@ -61,15 +60,12 @@ public class ProfileMediaController {
         return ResponseEntity.ok(mediaRepository.save(media));
     }
 
-    // POST /profiles/me/media/link → guardar link de YouTube, TikTok, Facebook  ← NUEVO
+    // POST /profiles/me/media/link → guardar link de video (YouTube, TikTok, etc.)
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/link")
     public ResponseEntity<ProfileMedia> addVideoLink(
             @RequestBody Map<String, String> body,
             @AuthenticationPrincipal CustomUserDetails user) {
-
-        Profile profile = profileRepository.findByUser_Email(user.getUsername())
-                .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
 
         String url   = body.get("url");
         String type  = body.get("type");
@@ -79,18 +75,28 @@ public class ProfileMediaController {
             return ResponseEntity.badRequest().build();
         }
 
+        Profile profile = profileRepository.findByUser_Email(user.getUsername())
+                .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
+
+        // Verificar si este link ya existe para no duplicar
+        List<ProfileMedia> existing = mediaRepository.findByProfile_Id(profile.getId());
+        boolean alreadyExists = existing.stream()
+                .anyMatch(m -> url.equals(m.getUrl()));
+
+        if (alreadyExists) {
+            // Devolver el existente sin duplicar
+            return existing.stream()
+                    .filter(m -> url.equals(m.getUrl()))
+                    .findFirst()
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.ok().build());
+        }
+
         ProfileMedia media = new ProfileMedia();
         media.setProfile(profile);
+        media.setType(resolveMediaType(type, url));
         media.setUrl(url);
         media.setTitle(title);
-
-        try {
-            media.setType(ProfileMedia.MediaType.valueOf(
-                    type != null ? type.toUpperCase() : "VIDEO"
-            ));
-        } catch (IllegalArgumentException e) {
-            media.setType(ProfileMedia.MediaType.VIDEO);
-        }
 
         return ResponseEntity.ok(mediaRepository.save(media));
     }
@@ -107,5 +113,19 @@ public class ProfileMediaController {
 
         mediaRepository.deleteByProfile_IdAndId(profile.getId(), mediaId);
         return ResponseEntity.ok().build();
+    }
+
+    // ── Helper: detectar tipo de media por URL ────────────────────────────────
+    private ProfileMedia.MediaType resolveMediaType(String type, String url) {
+        if (type != null && !type.isBlank()) {
+            try {
+                return ProfileMedia.MediaType.valueOf(type.toUpperCase());
+            } catch (IllegalArgumentException ignored) {}
+        }
+        // Auto-detectar por URL
+        if (url.contains("tiktok.com") || url.contains("/reel") || url.contains("reels")) {
+            return ProfileMedia.MediaType.REEL;
+        }
+        return ProfileMedia.MediaType.VIDEO;
     }
 }
