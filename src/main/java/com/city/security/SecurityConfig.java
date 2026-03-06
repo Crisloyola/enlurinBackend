@@ -41,6 +41,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
             .requestMatchers(
                 "/auth/register",
+                "/",
                 "/auth/login",
                 "/auth/public",
                 "/auth/**",          // ← ya lo tienes pero verifica
