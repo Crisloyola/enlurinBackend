@@ -17,8 +17,8 @@ public class OpenApiConfig {
 
         return new OpenAPI()
                 .info(new Info()
-                        .title("City App API")
-                        .description("API de negocios locales - City App")
+                        .title("Enlurin API")
+                        .description("API de negocios locales - Enlurin")
                         .version("1.0.0"))
                 .addSecurityItem(new SecurityRequirement()
                         .addList(securitySchemeName))
